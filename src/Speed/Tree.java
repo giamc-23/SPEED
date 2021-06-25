@@ -71,20 +71,23 @@ public class Tree {
 				char[] WindList = Window.toCharArray();
 				if (WindList[i] == Opposite) {
 					Episode = Window.substring(i, Window.length());
-					Read(Episode, 0, "");
-
 					if (Episode.length() > max_episode_length) {
 						max_episode_length = Episode.length();
 					}
+					Window = Window.substring(Window.length() - max_episode_length+1, Window.length());
+					Read(Episode, 0);
+					for(String event: EpisodeList) {
+						addEvents(event);
+					}
 				}
-				Read(Episode, 0, "");
-				Window = Window.substring(Window.length() - max_episode_length+1, Window.length());
+
+
 			}
 
 		}
 	}
 
-	public void Read(String Episode, int i, String out){
+	public void Read(String Episode, int i){
 		if (i == Episode.length()) {
 			return;
 		}
@@ -92,13 +95,12 @@ public class Tree {
 		// consider each substring `S[i, j]`
 		for (int j = Episode.length() - 1; j >= i; j--)
 		{
-			String sub_str = OPEN_BRACKET + Episode.substring(i, j + 1)
-					+ CLOSED_BRACKET;
+
 			EpisodeList.add(Episode.substring(i,j+1));
 
 			// append the substring to the result and recur with an index of
 			// the next character to be processed and the result string
-			Read(Episode, j + 1, out + sub_str);
+			Read(Episode, j + 1);
 		}
 
 		Set<String> set = new HashSet<>(EpisodeList);
