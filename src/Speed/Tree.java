@@ -74,7 +74,7 @@ public class Tree {
 					if (Episode.length() > max_episode_length) {
 						max_episode_length = Episode.length();
 					}
-					Window = Window.substring(Window.length() - max_episode_length+1, Window.length());
+					Window = Window.substring(Window.length() - max_episode_length, Window.length());
 					Read(Episode, 0);
 					for(String event: EpisodeList) {
 						addEvents(event);
