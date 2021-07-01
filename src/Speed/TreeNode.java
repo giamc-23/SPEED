@@ -24,7 +24,6 @@ public class TreeNode {
 		} else {
 			System.out.println("The current children of " + c + " is/are " + NewList);
 		}*/
-
 	}
 
 
@@ -43,3 +42,4 @@ public class TreeNode {
 	}
 
 }
+
