@@ -13,13 +13,15 @@ public class Speed {
 	public static void main(String[] args) {
 		Speed speed = new Speed();
 		//speed.Read("ABbDCcaBCbdcADaBAdab", 0);
-		speed.run("ABbDCcaBCbdcADaBAdab");
-		int root_freq = 0;
-		for(char c : speed.tree.root.children.keySet()) 
-			root_freq += speed.tree.root.children.get(c).frequency;
-		System.out.println(root_freq);
-		speed.tree.getFreqevents("Adac");
-		speed.CalcProb("b", 'c');
+		
+		String sequence = "CBcbAaAaAaAaAaAaAaAaAaAaAaAaAaAaAa";
+		// Get the sequence from SHDU
+		speed.run(sequence);
+		
+		//speed.tree.getFreqevents("Adac");
+		//System.out.println(speed.getProbability(speed.tree,"Ada", 'b'));
+		//System.out.println(speed.getProbability(speed.tree,"Ada", 'c'));
+		//speed.CalcProb("Ada", 'c');
 	}
 
 	public void run(String seq){
@@ -28,7 +30,14 @@ public class Speed {
 		char E;
 		String Window = "";
 		System.out.println("Speed starts!");
+		char predictedEvent = ' ';
+		double maxProb = -1;
+		int successCount = 0;
+		int totalAttemps = 0;
 		for(Character e: seq.toCharArray()){
+			if(e == predictedEvent)
+				successCount++;
+			totalAttemps++;
 			//System.out.println("Episode: " + Episode);
 			Window += e;
 			if(e>='A' && e<='Z')
@@ -62,9 +71,58 @@ public class Speed {
 
 			System.out.println("Window after episode extraction : " + Window);
 			
+			// Update root frequency
+			int root_freq = 0;
+			for(char c : tree.root.children.keySet()) 
+				root_freq += tree.root.children.get(c).frequency;
+			tree.root.frequency = root_freq;
+			
+			
+			// use this window and the decision tree to iterate over all the possible events
+			// pick the event which has the highest probability value
+			predictedEvent = ' ';
+			maxProb = -1;
+			for(Character event : tree.root.children.keySet()) {
+				double prob = getProbability(tree, Window, event);
+				if(prob > maxProb) {
+					predictedEvent = event;
+					maxProb = prob;
+				}
+			}
 		}
+		
+		System.out.println("Accuracy of speed " + successCount / totalAttemps);
 	}
 
+	public double getProbability(Tree tree, String window, char event) {
+		double prob = 1.0;
+		Deque<TreeNode> queue = new LinkedList<>();
+		queue.add(tree.root);
+		for(char window_event : window.toCharArray()) {
+			TreeNode n = queue.peekLast().children.get(window_event);
+			if(n!=null)
+				queue.add(queue.peekLast().children.get(window_event));
+			else
+				break;
+		}
+		
+		while(!queue.isEmpty()) {
+			TreeNode cur_node = queue.poll();
+			double parent_freq = (double) cur_node.frequency;
+			double event_freq = (double) ((cur_node.children.get(event) == null) ? 0 : cur_node.children.get(event).frequency);
+			double event_prob = (event_freq / parent_freq);
+			// get all children freq of current node and substract from event freq
+			double all_child_freq = 0.0;
+			for(char child : cur_node.children.keySet())
+				all_child_freq += cur_node.children.get(child).frequency;
+			
+			double null_freq = parent_freq - all_child_freq;
+			double null_prob = null_freq/parent_freq;
+			prob = event_prob + (null_prob*prob);
+		}
+		return prob;
+	}
+	
 	public void CalcProb(String window, char c){
 		TreeNode cur_node = tree.root;
 		char[] WindList = window.toCharArray();
@@ -117,4 +175,3 @@ public class Speed {
 		EpisodeList.addAll(set);
 	}
 }
-
