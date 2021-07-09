@@ -1,3 +1,4 @@
+package Speed;
 import java.awt.*;
 import java.util.*;
 import java.lang.Character;
@@ -97,12 +98,13 @@ public class Speed {
 		String Episode = "Not found";
 		char E;
 		String Window = "";
-		System.out.println("Speed starts!");
+		//System.out.println("Speed starts!");
 		char predictedEvent = ' ';
 		double maxProb = -1;
-		int successCount = 0;
-		int totalAttemps = 0;
+		double successCount = 0;
+		double totalAttemps = 0;
 		for(Character e: seq.toCharArray()) {
+			//System.out.println("******Actual event " + e + " Predicted Event " + predictedEvent);
 			if (e == predictedEvent)
 				successCount++;
 			totalAttemps++;
@@ -125,20 +127,20 @@ public class Speed {
 
 					//System.out.println(Episode);
 					Read(Episode, 0);
-					System.out.print("All possible contexts : ");
+					//System.out.print("All possible contexts : ");
 					for (String context : EpisodeList) {
 						if (context.length() <= max_episode_length) {
-							System.out.print(context + ",");
+							//System.out.print(context + ",");
 							tree.addEvents(context);
 						}
 					}
-					System.out.println();
+					//System.out.println();
 					EpisodeList.clear();
 					break;
 				}
 			}
 
-			System.out.println("Window after episode extraction : " + Window);
+			//System.out.println("Window after episode extraction : " + Window);
 
 			// Update root frequency
 			int root_freq = 0;
@@ -162,7 +164,7 @@ public class Speed {
 			}
 		}
 		if(test == true) {
-			System.out.println("Accuracy of speed " + successCount / totalAttemps);
+			System.out.println("Accuracy of speed " + (successCount / totalAttemps)*100 + "%");
 		}
 	}
 
